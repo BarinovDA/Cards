@@ -7,9 +7,7 @@ public class Main {
             throw new IllegalArgumentException("Path to images is not specified");
         }
             String path = args[0];
-
             CardParser cardParser = new CardParser(path);
             cardParser.run();
-
     }
 }
