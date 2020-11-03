@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static main.java.ru.cards.ColorConstant.DEEP_BLACK;
 import static main.java.ru.cards.ColorConstant.DEEP_GRAY;
@@ -113,15 +114,17 @@ public class CardParser {
     private void printCardValue(BufferedImage subImg) throws IOException {
         //карта есть если цвет белый (255.255.255) или серый (120.120.120)
         if (isCard(subImg)) {
-            //определение значения карты через отбор ппикселей из массива ARRAY_PIXELS_COORDINATE и сравнение
-            for (int i = 0; i < ARRAY_PIXELS_COORDINATE.length; i += 2) {
-                if (new Color(subImg.getRGB(ARRAY_PIXELS_COORDINATE[i], ARRAY_PIXELS_COORDINATE[i + 1])).equals(Color.WHITE)
-                    || new Color(subImg.getRGB(ARRAY_PIXELS_COORDINATE[i], ARRAY_PIXELS_COORDINATE[i + 1])).equals(LIGHT_GRAY)) {
-                    arrayPixelsProbe[i / 2] = 0;
-                } else {
-                    arrayPixelsProbe[i / 2] = 1;
-                }
-            }
+            IntStream.iterate(0, x -> x + 2)
+                .limit(ARRAY_PIXELS_COORDINATE.length/2)
+                .forEach(value -> {
+                   if (new Color(subImg.getRGB(ARRAY_PIXELS_COORDINATE[value], ARRAY_PIXELS_COORDINATE[value + 1])).equals(Color.WHITE)
+                || (new Color(subImg.getRGB(ARRAY_PIXELS_COORDINATE[value], ARRAY_PIXELS_COORDINATE[value + 1])).equals(LIGHT_GRAY))) {
+                       arrayPixelsProbe[value / 2] = 0;
+                   } else {
+                       arrayPixelsProbe[value / 2] = 1;
+                   }
+                });
+
             for (Map.Entry<String, String> entry : cardValues.entrySet()) {
                 String key = entry.getKey().replaceAll(", ", "");
                 String keyWithoutReplace = entry.getKey();
